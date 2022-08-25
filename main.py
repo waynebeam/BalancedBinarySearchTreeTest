@@ -1,8 +1,8 @@
-
+import time
 
 def main():
   sorted_nodes = []
-  for i in range(1000):
+  for i in range(1000000):
     node = Node(i, f"{i}")
     sorted_nodes.append(node)  
   tree = Tree(make_bbst(sorted_nodes,0,len(sorted_nodes)-1))
@@ -13,6 +13,9 @@ def main():
     if choice == "b":
       target_key = int(input("Which key?: "))
       brute_search_tree(target_key, sorted_nodes)
+    if choice == "s":
+      target_key = int(input("Which key?: "))
+      tree.search(target_key)
 
 class Node:
   def __init__(self, key: int, value: str):
@@ -25,6 +28,19 @@ class Node:
 class Tree:
   def __init__(self, root:Node):
     self.root = root
+
+  def search(self, target_key:int):
+    count = 0
+    start_time= time.time()
+    current_node = self.root
+    while current_node.key != target_key:
+      count += 1
+      if target_key < current_node.key:
+        current_node = current_node.left
+      if target_key > current_node.key:
+        current_node = current_node.right
+    end_time= time.time()
+    print(f"found {target_key} in {count} steps using the tree in {(end_time-start_time)*1000} seconds")
 
 
 
@@ -50,10 +66,12 @@ def make_bbst(nodes:[], lo:int, hi:int, parent:Node = None):
 
 def brute_search_tree(target_key, nodes:[]):
   count = 0
+  start_time= time.time()
   for node in nodes:
     count += 1
     if node.key == target_key:
-      print(f"found {target_key} in {count} steps by brute force")
+      end_time= time.time()
+      print(f"found {target_key} in {count} steps by brute force in {(end_time-start_time)*1000} seconds")
     
 
 def walk_tree(tree:Tree):
