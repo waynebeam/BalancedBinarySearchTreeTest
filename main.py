@@ -16,8 +16,8 @@ def main():
       walk_tree(tree)
       
     if choice == "l":
-      all_nodes = tree.list_all()
-      print(len(all_nodes))
+      all_nodes = tree.list_all(tree.root)
+      print(f"{len(all_nodes)} items in tree")
 
     if choice == "d":
       tree.draw_tree(tree.root)
@@ -55,15 +55,10 @@ class Tree:
 
   def list_all(self, node:Node = None):
     if not node:
-      node = self.root
-    if node.left:
-      self.list_all(node.left)
-    
-    self.all_nodes.append(node)
-    if node.right:
-      self.list_all(node.right)
-
-    return self.all_nodes
+      return []  
+    return (self.list_all(node.left)
+           + [node.key]
+           + self.list_all(node.right))
 
   def draw_tree(self, node, level=0, space='\t'):
     if node is None:
