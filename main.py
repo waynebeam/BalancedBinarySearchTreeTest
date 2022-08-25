@@ -2,22 +2,25 @@ import time
 
 def main():
   sorted_nodes = []
+  tree_size = int(input("What size integer tree? \n"))
   start_time = time.time()
-  for i in range(100000):
+  for i in range(tree_size):
     node = Node(i, f"{i}")
     sorted_nodes.append(node)  
   tree = Tree(make_bbst(sorted_nodes,0,len(sorted_nodes)-1))
   end_time = time.time()
   print(f"{(end_time-start_time)*1000} milisecond setup time")
   
-  while(choice := input("Walk, search, or list all?: ")) != "q":
+  while(choice := input("Walk, search,list all, or draw?: ")) != "q":
     if choice == "w":
       walk_tree(tree)
       
     if choice == "l":
       all_nodes = tree.list_all()
       print(len(all_nodes))
-      
+
+    if choice == "d":
+      tree.draw_tree(tree.root)
    
     if choice == "s":
       target_key = int(input("Which key?: "))
@@ -62,7 +65,18 @@ class Tree:
 
     return self.all_nodes
 
+  def draw_tree(self, node, level=0, space='\t'):
+    if node is None:
+      print(space*level + 'x')
+      return
 
+    if node.left is None and node.right is None:
+      print(space*level + str(node.key))
+      return
+
+    self.draw_tree(node.right,level+1)
+    print(space*level + str(node.key))
+    self.draw_tree(node.left, level+1)
 
 
 def make_bbst(nodes:[], lo:int, hi:int, parent:Node = None):
