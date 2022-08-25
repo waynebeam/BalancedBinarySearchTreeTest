@@ -11,21 +11,34 @@ def main():
   end_time = time.time()
   print(f"{(end_time-start_time)*1000} milisecond setup time")
   
-  while(choice := input("Walk, search,list all, or draw?: ")) != "q":
+  while(choice := input("Walk, update, count, height,look up, print all, or draw?: ")) != "q":
+    if choice == "h":
+      print(f"tree is {tree.find_height(tree.root)} levels tall")
     if choice == "w":
       walk_tree(tree)
       
-    if choice == "l":
-      all_nodes = tree.list_all(tree.root)
-      print(f"{len(all_nodes)} items in tree")
-
+    if choice == "c":
+      print(f'{tree.count_nodes(tree.root)} nodes')
+      
+    if choice == "u":
+      key = int(input("Which key?: "))
+      value = input("What's the new value?: ")
+      tree.update(key,value)
+      
     if choice == "d":
       tree.draw_tree(tree.root)
+    if choice == "p":
+      print(tree.list_all(tree.root))
+      
+    if choice == "l":
+      key = int(input("Which key?: "))
+      result = tree.search(tree.root,key)
+      print(result.value if result is not None else "No such thing")
    
-    if choice == "s":
-      target_key = int(input("Which key?: "))
-      brute_search_tree(target_key,sorted_nodes)
-      tree.search(target_key)
+    # if choice == "s":
+    #   target_key = int(input("Which key?: "))
+    #   brute_search_tree(target_key,sorted_nodes)
+    #   tree.search(target_key)
 
 class Node:
   def __init__(self, key: int, value: str):
@@ -40,24 +53,40 @@ class Tree:
     self.root = root
     self.all_nodes = []
 
-  def search(self, target_key:int):
-    count = 0
-    start_time= time.time()
-    current_node = self.root
-    while current_node.key != target_key:
-      count += 1
-      if target_key < current_node.key:
-        current_node = current_node.left
-      if target_key > current_node.key:
-        current_node = current_node.right
-    end_time= time.time()
-    print(f"\nfound {target_key} \nin {count} steps using the tree \nin {(end_time-start_time)*1000} miliseconds")
+  def find_height(self, node: Node):
+    if node is None:
+      return 0
+    return 1 + max(self.find_height(node.left), self.find_height(node.right))
+
+  def count_nodes(self, node:Node):
+    if node is None:
+      return 0
+    return 1 + self.count_nodes(node.left) + self.count_nodes(node.right)
+
+  def search(self, node:Node, target_key:int):
+    if node is None:
+      return None
+    if node.key == target_key:
+      return node
+    if target_key < node.key:
+      return self.search(node.left, target_key)
+    if target_key > node.key:
+      return self.search(node.right, target_key)
+    
+
+  def update(self, key, value):
+    node = self.search(self.root, key)
+    if node is None:
+      print("No such node")
+    else:
+      node.value = value
+    
 
   def list_all(self, node:Node = None):
     if not node:
       return []  
     return (self.list_all(node.left)
-           + [node.key]
+           + [(node.key, node.value)]
            + self.list_all(node.right))
 
   def draw_tree(self, node, level=0, space='\t'):
@@ -93,6 +122,7 @@ def make_bbst(nodes:[], lo:int, hi:int, parent:Node = None):
     base_node.right = None
 
   return base_node
+
 
 def brute_search_tree(target_key, nodes:[]):
   count = 0
