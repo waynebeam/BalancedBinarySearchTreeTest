@@ -1,8 +1,18 @@
 
 
 def main():
+  sorted_nodes = []
+  for i in range(1000):
+    node = Node(i, f"{i}")
+    sorted_nodes.append(node)  
   tree = Tree(make_bbst(sorted_nodes,0,len(sorted_nodes)-1))
-  walk_tree(tree)
+  
+  while(choice := input("Walk, search, or brute search?: ")) != "q":
+    if choice == "w":
+      walk_tree(tree)
+    if choice == "b":
+      target_key = int(input("Which key?: "))
+      brute_search_tree(target_key, sorted_nodes)
 
 class Node:
   def __init__(self, key: int, value: str):
@@ -16,16 +26,7 @@ class Tree:
   def __init__(self, root:Node):
     self.root = root
 
-n1 = Node(1,"1")
-n2 = Node(2,"2")
-n3 = Node(3,"3")
-n4 = Node(4,"4")
-n5 = Node(5,"5")
-n6 = Node(6,"6")
-n7 = Node(7,"7")
-n8 = Node(8,"8")
-n9 = Node(9,"9")
-sorted_nodes = [n1, n2, n3, n4, n5, n6, n7, n8, n9] 
+
 
 def make_bbst(nodes:[], lo:int, hi:int, parent:Node = None):
   mid:int = (hi + lo) // 2
@@ -47,19 +48,32 @@ def make_bbst(nodes:[], lo:int, hi:int, parent:Node = None):
 
   return base_node
 
+def brute_search_tree(target_key, nodes:[]):
+  count = 0
+  for node in nodes:
+    count += 1
+    if node.key == target_key:
+      print(f"found {target_key} in {count} steps by brute force")
+    
+
 def walk_tree(tree:Tree):
   current_node = tree.root
   print(current_node.key)
   while current_node.left or current_node.right:
     parent = current_node.parent
     dir = input("go l or r: ")
-    if dir == "l":
+    if dir == "l" and current_node.left:
       current_node = current_node.left
-    elif dir == "r":
+      print('move to ', current_node.key)
+    elif dir == "r" and current_node.right:
       current_node = current_node.right
-    print(current_node.key if current_node else "End of the line")
-    if dir == "b" or not current_node:
-      current_node = parent
+      print('move to ', current_node.key)
 
+    else: 
+      print('End of branch. Staying on ',current_node.key )
+      if dir == "b":
+        current_node = parent
+
+  print(f"Arrived at {current_node.key}. End of the tree")
 if __name__ == "__main__":
   main()
