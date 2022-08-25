@@ -2,19 +2,26 @@ import time
 
 def main():
   sorted_nodes = []
-  for i in range(1000000):
+  start_time = time.time()
+  for i in range(100000):
     node = Node(i, f"{i}")
     sorted_nodes.append(node)  
   tree = Tree(make_bbst(sorted_nodes,0,len(sorted_nodes)-1))
+  end_time = time.time()
+  print(f"{(end_time-start_time)*1000} milisecond setup time")
   
-  while(choice := input("Walk, search, or brute search?: ")) != "q":
+  while(choice := input("Walk, search, or list all?: ")) != "q":
     if choice == "w":
       walk_tree(tree)
-    if choice == "b":
-      target_key = int(input("Which key?: "))
-      brute_search_tree(target_key, sorted_nodes)
+      
+    if choice == "l":
+      all_nodes = tree.list_all()
+      print(len(all_nodes))
+      
+   
     if choice == "s":
       target_key = int(input("Which key?: "))
+      brute_search_tree(target_key,sorted_nodes)
       tree.search(target_key)
 
 class Node:
@@ -28,6 +35,7 @@ class Node:
 class Tree:
   def __init__(self, root:Node):
     self.root = root
+    self.all_nodes = []
 
   def search(self, target_key:int):
     count = 0
@@ -40,7 +48,20 @@ class Tree:
       if target_key > current_node.key:
         current_node = current_node.right
     end_time= time.time()
-    print(f"found {target_key} in {count} steps using the tree in {(end_time-start_time)*1000} seconds")
+    print(f"\nfound {target_key} \nin {count} steps using the tree \nin {(end_time-start_time)*1000} miliseconds")
+
+  def list_all(self, node:Node = None):
+    if not node:
+      node = self.root
+    if node.left:
+      self.list_all(node.left)
+    
+    self.all_nodes.append(node)
+    if node.right:
+      self.list_all(node.right)
+
+    return self.all_nodes
+
 
 
 
@@ -71,7 +92,7 @@ def brute_search_tree(target_key, nodes:[]):
     count += 1
     if node.key == target_key:
       end_time= time.time()
-      print(f"found {target_key} in {count} steps by brute force in {(end_time-start_time)*1000} seconds")
+      print(f"\nfound {target_key} \nin {count} steps by brute force \nin {(end_time-start_time)*1000} miliseconds")
     
 
 def walk_tree(tree:Tree):
