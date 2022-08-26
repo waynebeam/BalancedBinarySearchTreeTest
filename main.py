@@ -23,7 +23,7 @@ def main():
     if choice == "u":
       key = int(input("Which key?: "))
       value = input("What's the new value?: ")
-      tree.update(key,value)
+      tree[key] = value
       
     if choice == "d":
       tree.draw_tree(tree.root)
@@ -33,7 +33,7 @@ def main():
     if choice == "l":
       key = int(input("Which key?: "))
       result = tree.search(tree.root,key)
-      print(result.value if result is not None else "No such thing")
+      print(result.value + str(result.key) if result is not None else "No such thing")
    
     # if choice == "s":
     #   target_key = int(input("Which key?: "))
@@ -63,6 +63,26 @@ class Tree:
       return 0
     return 1 + self.count_nodes(node.left) + self.count_nodes(node.right)
 
+  def __setitem__(self, key, value):
+    result = self.search(self.root, key)
+    if result is not None:
+      self.update(result,value)
+    else:
+      print("insert")
+      self.insert(self.root,key,value)
+      
+  def insert(self,node,key, value):
+    if node is None:
+      node = Node(key,value)
+      return node
+
+    if key < node.key:
+      node.left = self.insert(node.left,key,value)    
+      return node
+    if key > node.key:
+      node.right = self.insert(node.right, key, value)
+      return node
+  
   def search(self, node:Node, target_key:int):
     if node is None:
       return None
@@ -74,11 +94,8 @@ class Tree:
       return self.search(node.right, target_key)
     
 
-  def update(self, key, value):
-    node = self.search(self.root, key)
-    if node is None:
-      print("No such node")
-    else:
+  def update(self,node, value):
+    
       node.value = value
     
 
